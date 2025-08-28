@@ -40,7 +40,7 @@ servers:
 
   slack:
     description: "Slack integration for team communication"
-    command: claude mcp add slack -s local -e SLACK_MCP_XOXC_TOKEN="$SLACK_MCP_XOXC_TOKEN" -e SLACK_MCP_XOXD_TOKEN="$SLACK_MCP_XOXD_TOKEN" -- npx -y slack-mcp-server@latest --transport stdio
+    command: 'claude mcp add slack -s local -e SLACK_MCP_XOXC_TOKEN="$SLACK_MCP_XOXC_TOKEN" -e SLACK_MCP_XOXD_TOKEN="$SLACK_MCP_XOXD_TOKEN" -- npx -y slack-mcp-server@latest --transport stdio'
     env_vars:
       - SLACK_MCP_XOXC_TOKEN
       - SLACK_MCP_XOXD_TOKEN
