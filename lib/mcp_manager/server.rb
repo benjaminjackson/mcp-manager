@@ -24,8 +24,8 @@ module McpManager
       puts "ℹ️  Description: #{description}"
       puts "ℹ️  Executing: #{command}"
       
-      system(command, out: File::NULL, err: File::NULL)
-      if $CHILD_STATUS.success?
+      result = system(command, out: File::NULL, err: File::NULL)
+      if result && $CHILD_STATUS&.success?
         puts "✅ Successfully installed #{@name}"
         true
       else
@@ -40,8 +40,8 @@ module McpManager
       uninstall_command = "claude mcp remove #{@name}"
       puts "ℹ️  Executing: #{uninstall_command}"
       
-      system(uninstall_command, out: File::NULL, err: File::NULL)
-      if $CHILD_STATUS.success?
+      result = system(uninstall_command, out: File::NULL, err: File::NULL)
+      if result && $CHILD_STATUS&.success?
         puts "✅ Successfully uninstalled #{@name}"
         true
       else

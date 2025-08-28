@@ -98,6 +98,41 @@ class TestServer < Minitest::Test
     end
   end
 
+  def test_install_with_nil_child_status
+    assert_method_handles_nil_child_status(:install, nil, /Installing MCP server: test-server/, /Failed to install test-server/)
+  end
+
+  def test_install_system_returns_false_with_nil_child_status
+    assert_method_handles_nil_child_status(:install, false, /Installing MCP server: test-server/, /Failed to install test-server/)
+  end
+
+  def test_uninstall_with_nil_child_status
+    assert_method_handles_nil_child_status(:uninstall, nil, /Uninstalling MCP server: test-server/, /Failed to uninstall test-server/)
+  end
+
+  def test_uninstall_system_returns_false_with_nil_child_status
+    assert_method_handles_nil_child_status(:uninstall, false, /Uninstalling MCP server: test-server/, /Failed to uninstall test-server/)
+  end
+
+  private
+
+  def assert_method_handles_nil_child_status(method, system_return_value, start_message, failure_message)
+    @server.stub(:system, system_return_value) do
+      original_child_status = defined?($CHILD_STATUS) ? $CHILD_STATUS : nil
+      $CHILD_STATUS = nil
+      
+      output = capture_io do
+        result = @server.send(method)
+        refute result
+      end
+      
+      assert_match(start_message, output[0])
+      assert_match(failure_message, output[0])
+      
+      $CHILD_STATUS = original_child_status
+    end
+  end
+
   def test_to_s
     expected = "test-server: Test MCP server"
     assert_equal expected, @server.to_s
