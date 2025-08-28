@@ -1,0 +1,26 @@
+PATH
+  remote: .
+  specs:
+    mcp_manager (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minitest (5.25.5)
+    minitest-rg (5.3.0)
+      minitest (~> 5.0)
+    rake (13.3.0)
+
+PLATFORMS
+  arm64-darwin-22
+  ruby
+
+DEPENDENCIES
+  bundler (~> 2.0)
+  mcp_manager!
+  minitest (~> 5.0)
+  minitest-rg (~> 5.0)
+  rake (~> 13.0)
+
+BUNDLED WITH
+   2.7.1

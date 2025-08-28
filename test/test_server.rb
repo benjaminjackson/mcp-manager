@@ -32,7 +32,7 @@ class TestServer < Minitest::Test
 
   def test_install_success
     @server.stub(:system, true) do
-      original_child_status = $CHILD_STATUS || nil
+      original_child_status = defined?($CHILD_STATUS) ? $CHILD_STATUS : nil
       $CHILD_STATUS = OpenStruct.new(success?: true)
       
       output = capture_io do
@@ -49,7 +49,7 @@ class TestServer < Minitest::Test
 
   def test_install_failure
     @server.stub(:system, false) do
-      original_child_status = $CHILD_STATUS || nil
+      original_child_status = defined?($CHILD_STATUS) ? $CHILD_STATUS : nil
       $CHILD_STATUS = OpenStruct.new(success?: false)
       
       output = capture_io do
@@ -66,7 +66,7 @@ class TestServer < Minitest::Test
 
   def test_uninstall_success
     @server.stub(:system, true) do
-      original_child_status = $CHILD_STATUS || nil
+      original_child_status = defined?($CHILD_STATUS) ? $CHILD_STATUS : nil
       $CHILD_STATUS = OpenStruct.new(success?: true)
       
       output = capture_io do
@@ -83,7 +83,7 @@ class TestServer < Minitest::Test
 
   def test_uninstall_failure
     @server.stub(:system, true) do
-      original_child_status = $CHILD_STATUS || nil
+      original_child_status = defined?($CHILD_STATUS) ? $CHILD_STATUS : nil
       $CHILD_STATUS = OpenStruct.new(success?: false)
       
       output = capture_io do
