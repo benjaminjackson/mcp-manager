@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'minitest/rg'
 require 'minitest/mock'
 require 'tempfile'
 require 'tmpdir'
