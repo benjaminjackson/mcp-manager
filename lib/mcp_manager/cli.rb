@@ -9,7 +9,6 @@ module McpManager
     end
     
     def run(args = ARGV)
-      options = {}
       parser = OptionParser.new do |opts|
         opts.banner = "Usage: mcp-manager [options] <command> [server_name]"
         
