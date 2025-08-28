@@ -50,7 +50,7 @@ class TestServer < Minitest::Test
   def test_install_failure
     @server.stub(:system, false) do
       original_child_status = defined?($CHILD_STATUS) ? $CHILD_STATUS : nil
-      $CHILD_STATUS = OpenStruct.new(success?: false)
+      $CHILD_STATUS = OpenStruct.new(success?: false, exitstatus: 1)
       
       output = capture_io do
         result = @server.install
@@ -58,7 +58,7 @@ class TestServer < Minitest::Test
       end
       
       assert_match(/Installing MCP server: test-server/, output[0])
-      assert_match(/Failed to install test-server/, output[0])
+      assert_match(/Failed to install test-server: command failed with exit code 1/, output[0])
       
       $CHILD_STATUS = original_child_status
     end
@@ -84,7 +84,7 @@ class TestServer < Minitest::Test
   def test_uninstall_failure
     @server.stub(:system, true) do
       original_child_status = defined?($CHILD_STATUS) ? $CHILD_STATUS : nil
-      $CHILD_STATUS = OpenStruct.new(success?: false)
+      $CHILD_STATUS = OpenStruct.new(success?: false, exitstatus: 2)
       
       output = capture_io do
         result = @server.uninstall
@@ -92,7 +92,7 @@ class TestServer < Minitest::Test
       end
       
       assert_match(/Uninstalling MCP server: test-server/, output[0])
-      assert_match(/Failed to uninstall test-server/, output[0])
+      assert_match(/Failed to uninstall test-server: command failed with exit code 2/, output[0])
       
       $CHILD_STATUS = original_child_status
     end
@@ -114,6 +114,26 @@ class TestServer < Minitest::Test
     assert_method_handles_nil_child_status(:uninstall, false, /Uninstalling MCP server: test-server/, /Failed to uninstall test-server/)
   end
 
+  def test_install_captures_stderr_output
+    @server.stub(:system, false) do
+      # Stub capture_stderr to return test error message
+      @server.stub(:capture_stderr, "Error: Package not found") do
+        original_child_status = defined?($CHILD_STATUS) ? $CHILD_STATUS : nil
+        $CHILD_STATUS = OpenStruct.new(success?: false, exitstatus: 1)
+        
+        output = capture_io do
+          result = @server.install
+          refute result
+        end
+        
+        assert_match(/Installing MCP server: test-server/, output[0])
+        assert_match(/Failed to install test-server: command failed with exit code 1 \(Error: Package not found\)/, output[0])
+        
+        $CHILD_STATUS = original_child_status
+      end
+    end
+  end
+
   private
 
   def assert_method_handles_nil_child_status(method, system_return_value, start_message, failure_message)
@@ -127,7 +147,7 @@ class TestServer < Minitest::Test
       end
       
       assert_match(start_message, output[0])
-      assert_match(failure_message, output[0])
+      assert_match(/#{failure_message.source}: process status unavailable/, output[0])
       
       $CHILD_STATUS = original_child_status
     end
