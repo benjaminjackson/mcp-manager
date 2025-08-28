@@ -3,8 +3,8 @@ require_relative 'lib/mcp_manager/version'
 Gem::Specification.new do |spec|
   spec.name          = "mcp_manager"
   spec.version       = McpManager::VERSION
-  spec.authors       = ["Ben"]
-  spec.email         = ["ben@example.com"]
+  spec.authors       = ["Ben Jackson"]
+  spec.email         = ["ben@hearmeout.co"]
 
   spec.summary       = %q{Utility for managing MCP servers in Claude projects}
   spec.description   = %q{A command-line tool for adding and removing MCP servers to a Claude project with a simple YAML config.}
