@@ -5,7 +5,7 @@ module McpManager
     attr_reader :config
     
     def initialize
-      @config = Config.new
+      @config = nil
     end
     
     def run(args = ARGV)
@@ -59,6 +59,10 @@ module McpManager
     
     private
     
+    def config
+      @config ||= Config.new
+    end
+    
     def install_server(server_name)
       if server_name.nil?
         error "Server name required for install command"
@@ -66,7 +70,7 @@ module McpManager
         exit 1
       end
       
-      server_config = @config.get_server_config(server_name)
+      server_config = config.get_server_config(server_name)
       unless server_config
         error "Unknown server: #{server_name}"
         show_available_servers
@@ -74,7 +78,7 @@ module McpManager
       end
       
       # Validate required environment variables
-      missing_vars = @config.check_env_vars(server_config['env_vars'] || [])
+      missing_vars = config.check_env_vars(server_config['env_vars'] || [])
       unless missing_vars.empty?
         error "Missing required environment variables: #{missing_vars.join(', ')}"
         show_env_setup(missing_vars)
@@ -91,13 +95,13 @@ module McpManager
         exit 1
       end
       
-      unless @config.server_exists?(server_name)
+      unless config.server_exists?(server_name)
         error "Unknown server: #{server_name}"
         show_available_servers
         exit 1
       end
       
-      server_config = @config.get_server_config(server_name)
+      server_config = config.get_server_config(server_name)
       server = Server.new(server_name, server_config)
       exit 1 unless server.uninstall
     end
@@ -106,7 +110,7 @@ module McpManager
       puts "\nAvailable MCP servers:"
       puts "====================="
       
-      @config.servers.each do |name, config|
+      config.servers.each do |name, config|
         puts "\n#{name}:"
         puts "  Description: #{config['description']}"
         
@@ -124,7 +128,7 @@ module McpManager
     end
     
     def show_available_servers
-      puts "\nAvailable servers: #{@config.list_servers.join(', ')}"
+      puts "\nAvailable servers: #{config.list_servers.join(', ')}"
       puts "Use 'mcp-manager list' for details"
     end
     
