@@ -9,6 +9,7 @@ GEM
     minitest (5.25.5)
     minitest-rg (5.3.0)
       minitest (~> 5.0)
+    ostruct (0.5.5)
     rake (13.3.0)
 
 PLATFORMS
@@ -20,6 +21,7 @@ DEPENDENCIES
   mcp_manager!
   minitest (~> 5.0)
   minitest-rg (~> 5.0)
+  ostruct (~> 0.5.0)
   rake (~> 13.0)
 
 BUNDLED WITH
