@@ -1,4 +1,4 @@
-require 'stringio'
+require 'open3'
 
 module McpManager
   class Server
@@ -26,15 +26,13 @@ module McpManager
       puts "ℹ️  Description: #{description}"
       puts "ℹ️  Executing: #{command}"
       
-      stderr_output = capture_stderr do
-        system(command, out: File::NULL)
-      end
+      stdout, stderr_output, exit_status = Open3.capture3(command)
       
-      if $CHILD_STATUS&.success?
+      if exit_status&.success?
         puts "✅ Successfully installed #{@name}"
         true
       else
-        error_message = build_error_message("install", stderr_output)
+        error_message = build_error_message("install", stderr_output, exit_status)
         puts "❌ Failed to install #{@name}: #{error_message}"
         false
       end
@@ -46,15 +44,13 @@ module McpManager
       uninstall_command = "claude mcp remove #{@name}"
       puts "ℹ️  Executing: #{uninstall_command}"
       
-      stderr_output = capture_stderr do
-        system(uninstall_command, out: File::NULL)
-      end
+      stdout, stderr_output, exit_status = Open3.capture3(uninstall_command)
       
-      if $CHILD_STATUS&.success?
+      if exit_status&.success?
         puts "✅ Successfully uninstalled #{@name}"
         true
       else
-        error_message = build_error_message("uninstall", stderr_output)
+        error_message = build_error_message("uninstall", stderr_output, exit_status)
         puts "❌ Failed to uninstall #{@name}: #{error_message}"
         false
       end
@@ -66,20 +62,12 @@ module McpManager
 
     private
 
-    def capture_stderr
-      original_stderr = $stderr
-      $stderr = StringIO.new
-      yield
-      $stderr.string
-    ensure
-      $stderr = original_stderr
-    end
 
-    def build_error_message(operation, stderr_output)
-      if $CHILD_STATUS.nil?
+    def build_error_message(operation, stderr_output, exit_status = nil)
+      if exit_status.nil?
         "process status unavailable"
-      elsif $CHILD_STATUS.respond_to?(:exitstatus) && $CHILD_STATUS.exitstatus
-        message = "command failed with exit code #{$CHILD_STATUS.exitstatus}"
+      elsif exit_status.respond_to?(:exitstatus) && exit_status.exitstatus
+        message = "command failed with exit code #{exit_status.exitstatus}"
         if stderr_output && !stderr_output.strip.empty?
           message += " (#{stderr_output.strip})"
         end
